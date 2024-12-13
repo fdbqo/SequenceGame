@@ -14,6 +14,10 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+/**
+ * GameOverActivity is displayed when the player fails to match the sequence correctly.
+ * It shows the final score and allows the player to submit their score if it's a high score.
+ */
 public class GameOverActivity extends AppCompatActivity {
 
     private int finalScore;
@@ -62,6 +66,9 @@ public class GameOverActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Submits the player's score to the database if it's a high score.
+     */
     private void submitScore() {
         String playerName = nameInput.getText().toString().trim();
         if (!playerName.isEmpty()) {
@@ -74,6 +81,9 @@ public class GameOverActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Transitions to the HighScoreActivity to view high scores.
+     */
     private void viewHighScores() {
         startActivity(new Intent(this, HighScoreActivity.class));
         finish();

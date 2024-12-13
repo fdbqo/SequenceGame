@@ -22,6 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * SequenceActivity is the main game screen where the sequence game is played.
+ * It handles sequence generation, display, user input using device tilt, and game logic.
+ */
 public class SequenceActivity extends AppCompatActivity implements SensorEventListener {
 
     private List<Integer> sequence;
@@ -57,6 +61,7 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sequence);
 
+        // Initialise UI components
         buttons = new MaterialButton[]{
                 findViewById(R.id.leftButton),
                 findViewById(R.id.topButton),
@@ -67,12 +72,14 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
         debugTextView = findViewById(R.id.debugTextView);
         scoreTextView = findViewById(R.id.scoreTextView);
 
+        // Set up sensor manager and accelerometer
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         WindowManager windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         display = windowManager.getDefaultDisplay();
 
+        // Get initial sequence length and score from intent
         sequenceLength = getIntent().getIntExtra("sequenceLength", 4);
         currentScore = getIntent().getIntExtra("score", 0);
         updateScoreDisplay();
@@ -93,6 +100,9 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
         sensorManager.unregisterListener(this);
     }
 
+    /**
+     * Calibrates the initial position of the device for accurate tilt detection.
+     */
     private void calibrateInitialPosition() {
         Toast.makeText(this, "Hold the device in your preferred position", Toast.LENGTH_LONG).show();
         new Handler().postDelayed(new Runnable() {
@@ -110,6 +120,9 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
         }, 3000);
     }
 
+    /**
+     * Generates a random sequence of colors for the game.
+     */
     private void generateSequence() {
         sequence = new ArrayList<>();
         Random random = new Random();
@@ -118,6 +131,9 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
         }
     }
 
+    /**
+     * Displays the generated sequence to the player.
+     */
     private void displaySequence() {
         isDisplaying = true;
         canAcceptInput = false;
@@ -142,6 +158,10 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
         }
     }
 
+    /**
+     * Flashes a button to indicate it as part of the sequence.
+     * @param buttonIndex The index of the button to flash.
+     */
     private void flashButton(int buttonIndex) {
         buttons[buttonIndex].setAlpha(0.3f);
         buttons[buttonIndex].animate()
@@ -192,9 +212,16 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
+        // Not used in this example
     }
 
+    /**
+     * Determines the tilt direction based on accelerometer values.
+     * @param x X-axis acceleration
+     * @param y Y-axis acceleration
+     * @param z Z-axis acceleration
+     * @return The detected direction (LEFT, TOP, RIGHT, BOTTOM) or -1 if no direction is detected
+     */
     private int getDirection(float x, float y, float z) {
         float threshold = 2.5f; // Reduced threshold for more sensitivity
 
@@ -249,6 +276,10 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
         }
     }
 
+    /**
+     * Checks if the player's input matches the current step in the sequence.
+     * @param direction The direction of the player's tilt
+     */
     private void checkInput(int direction) {
 //        String directionName = directionToString(direction);
 //        String color = directionToColor(direction);
@@ -287,10 +318,16 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
         }, DIRECTION_CHANGE_DELAY);
     }
 
+    /**
+     * Updates the score display on the screen.
+     */
     private void updateScoreDisplay() {
         scoreTextView.setText("Score: " + currentScore);
     }
 
+    /**
+     * Starts the next round by increasing sequence length and generating a new sequence.
+     */
     private void nextRound() {
         sequenceLength += 2;
         playerStep = 0;
@@ -298,6 +335,9 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
         displaySequence();
     }
 
+    /**
+     * Ends the game and transitions to the GameOverActivity.
+     */
     private void gameOver() {
         Intent intent = new Intent(this, GameOverActivity.class);
         intent.putExtra("score", currentScore);
